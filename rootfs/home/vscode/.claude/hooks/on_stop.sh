@@ -16,10 +16,10 @@ HOOK_DATA=$(cat)
 echo "[$(date -Iseconds)] on_stop: received payload: $HOOK_DATA"
 TRANSCRIPT_PATH=$(echo "$HOOK_DATA" | jq -r '.transcript_path // empty')
 SESSION_ID=$(echo "$HOOK_DATA" | jq -r '.session_id // "unknown"')
-AGENT_TYPE=$(echo "$HOOK_DATA" | jq -r '.agent_type // "main"')
+AGENT_TYPE=$(echo "$HOOK_DATA" | jq -r '.agent_type // "default"')
 
 # Only archive sessions from interactive agents
-ALLOWED_AGENTS=("main" "coco")
+ALLOWED_AGENTS=("coco")
 if [[ ! " ${ALLOWED_AGENTS[@]} " =~ " ${AGENT_TYPE} " ]]; then
   exit 0
 fi
@@ -42,5 +42,21 @@ mkdir -p "$ARCHIVE_DIR"
 
 DEST="${ARCHIVE_DIR}/${SESSION_ID}.jsonl"
 
-cp "$TRANSCRIPT_PATH" "$DEST"
-echo "on_stop: archived transcript to $DEST"
+# Defer the copy until the transcript file stops being written to
+(
+  # Wait for the file to exist and stabilize (mtime stops changing)
+  for i in $(seq 1 20); do
+    sleep 0.5
+    [[ -s "$TRANSCRIPT_PATH" ]] || continue
+    BEFORE=$(stat -c %Y "$TRANSCRIPT_PATH" 2>/dev/null || echo 0)
+    sleep 0.5
+    AFTER=$(stat -c %Y "$TRANSCRIPT_PATH" 2>/dev/null || echo 0)
+    if [[ "$BEFORE" == "$AFTER" ]]; then
+      cp "$TRANSCRIPT_PATH" "$DEST"
+      echo "[$(date -Iseconds)] on_stop: deferred copy completed -> $DEST" >> "$LOG_DIR/on_stop.log"
+      exit 0
+    fi
+  done
+  echo "[$(date -Iseconds)] on_stop: timed out waiting for transcript to stabilize" >> "$LOG_DIR/on_stop.log"
+) &
+disown $!

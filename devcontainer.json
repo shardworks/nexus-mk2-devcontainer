@@ -1,6 +1,6 @@
 {
   "containerEnv": {
-    "CLAUDE_TRANSCRIPTS_PATH": "/workspace/nexus-mk2-artifacts/transcripts/pending",
+    "CLAUDE_TRANSCRIPTS_PATH": "/workspace/nexus-mk2-notes/transcripts/pending",
     "NEXUS_ARTIFACTS_REMOTE": "git@github.com:shardworks/nexus-mk2-artifacts.git",
     "NEXUS_DOMAIN_PATH": "/workspace/nexus-mk2/domain",
     "NEXUS_TEMP_DIR": "/tmp",
@@ -35,8 +35,8 @@
   "initializeCommand": ".devcontainer/host-scripts/initialize.sh",
   "mounts": [
     "source=/tmp/ssh-filter,target=/tmp/ssh-filter,type=bind,consistency=cached",
-    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.claude.json,target=/home/vscode/.claude.json,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.claude/.credentials.json,target=/home/vscode/.claude/.credentials.json,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached"
   ],
   "name": "shardworks",
