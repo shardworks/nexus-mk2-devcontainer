@@ -1,5 +1,6 @@
 {
   "containerEnv": {
+    "CLAUDE_TRANSCRIPTS_PATH": "/workspace/nexus-mk2-artifacts/transcripts/pending",
     "NEXUS_ARTIFACTS_REMOTE": "git@github.com:shardworks/nexus-mk2-artifacts.git",
     "NEXUS_DOMAIN_PATH": "/workspace/nexus-mk2/domain",
     "NEXUS_TEMP_DIR": "/tmp",
