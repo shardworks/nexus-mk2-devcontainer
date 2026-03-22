@@ -19,7 +19,7 @@ SESSION_ID=$(echo "$HOOK_DATA" | jq -r '.session_id // "unknown"')
 AGENT_TYPE=$(echo "$HOOK_DATA" | jq -r '.agent_type // "default"')
 
 # Only archive sessions from interactive agents
-ALLOWED_AGENTS=("coco")
+ALLOWED_AGENTS=("coco" "ethnographer")
 if [[ ! " ${ALLOWED_AGENTS[@]} " =~ " ${AGENT_TYPE} " ]]; then
   exit 0
 fi
