@@ -17,7 +17,6 @@ services:
     shm_size: 1g
     volumes:
       - ..:/workspace:cached
-      - ../nexus-mk2-domain:/workspace/nexus-mk2/domain:ro
       - ${HOME}/.ssh/id_ed25519:/etc/coco/.ssh/id_ed25519:ro
 
 networks:
