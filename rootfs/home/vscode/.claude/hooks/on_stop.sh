@@ -42,6 +42,10 @@ mkdir -p "$ARCHIVE_DIR"
 
 DEST="${ARCHIVE_DIR}/${SESSION_ID}.jsonl"
 
+# Coco experiment data: archive transcript if the session produced logged work
+SANCTUM_HOME="/workspace/nexus-mk2"
+COCO_TRANSCRIPT_DIR="${SANCTUM_HOME}/experiments/data/transcripts"
+
 # Defer the copy until the transcript file stops being written to
 (
   # Wait for the file to exist and stabilize (mtime stops changing)
@@ -54,6 +58,14 @@ DEST="${ARCHIVE_DIR}/${SESSION_ID}.jsonl"
     if [[ "$BEFORE" == "$AFTER" ]]; then
       cp "$TRANSCRIPT_PATH" "$DEST"
       echo "[$(date -Iseconds)] on_stop: deferred copy completed -> $DEST" >> "$LOG_DIR/on_stop.log"
+
+      # For Coco sessions: archive transcript if coco-log has entries for this session
+      if [[ "$AGENT_TYPE" == "coco" ]] && grep -q "session: $SESSION_ID" "$SANCTUM_HOME/experiments/data/coco-log.yaml" 2>/dev/null; then
+        mkdir -p "$COCO_TRANSCRIPT_DIR"
+        cp "$TRANSCRIPT_PATH" "${COCO_TRANSCRIPT_DIR}/${SESSION_ID}.jsonl"
+        echo "[$(date -Iseconds)] on_stop: coco transcript archived -> ${COCO_TRANSCRIPT_DIR}/${SESSION_ID}.jsonl" >> "$LOG_DIR/on_stop.log"
+      fi
+
       exit 0
     fi
   done
