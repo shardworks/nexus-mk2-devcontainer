@@ -7,8 +7,9 @@ RUN curl -fsSL https://claude.ai/install.sh | bash
 
 USER root
 
-# install: 
-#   yq
+# install:
+#   sqlite3, yq
+RUN apt-get update && apt-get install -y sqlite3 && rm -rf /var/lib/apt/lists/*
 RUN wget https://github.com/mikefarah/yq/releases/download/v4.45.1/yq_linux_amd64 -O /usr/local/bin/yq &&\
     chmod +x /usr/local/bin/yq
 
