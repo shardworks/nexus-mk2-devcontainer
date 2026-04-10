@@ -1,0 +1,3 @@
+#!/bin/sh
+exec node --experimental-transform-types --no-warnings=ExperimentalWarning \
+  /workspace/nexus/packages/framework/cli/src/cli.ts "$@"
